@@ -16,6 +16,7 @@ Before getting started, we must create a policy that ensures all indexed resourc
 
 There are many ways to accomplish this task, such as using the Azure Portal, Azure Command Line (CLI), or using Terraform. I chose the latter to make it scriptable. The policy is depicted below.
 
+~~~
 {
     "type": "Microsoft.Authorization/policyDefinitions",
     "name": "audit-existing-linux-vm-ssh-with-password", 
@@ -46,9 +47,7 @@ There are many ways to accomplish this task, such as using the Azure Portal, Azu
         }
     }
 }
-
-#### 
-
+~~~
 
 ### Output
 **Your words here**
