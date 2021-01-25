@@ -10,44 +10,50 @@ This is the first project of the Azure DevOps nanodegree, where students must de
 3. To create and deploy the Virtual Machine (VM) image, we need [Packer](https://www.packer.io/downloads)
 4. For automated creation of our infrastructure, we need to install [Terraform](https://www.terraform.io/downloads.html)
 
-### Instructions
+### Policy Deployment
 
-Before getting started, we must create a policy that ensures all indexed resources are tagged. This policy will help us with organization and tracking, making it easier to log when things go wrong. For this task, we should use the Azure Policy tool found inside the security center. According to the given specifications, the policy to be created should **deny** the creation of resources that **do not have tags**.  
+Before deploying the infrastructure needed for this project, we must create a policy that ensures all indexed resources are tagged. This policy will help us with organization and tracking, making it easier to log when things go wrong. For this task, we should use the Azure Policy tool found inside the security center. According to the given specifications, the policy to be created should **deny** the creation of resources that **do not have tags**.  
 
 There are many ways to accomplish this task, such as using the Azure Portal, Azure Command Line (CLI), or using Terraform. I chose the latter to make it scriptable. The policy is depicted below.
 
 ~~~
 {
     "type": "Microsoft.Authorization/policyDefinitions",
-    "name": "audit-existing-linux-vm-ssh-with-password", 
+    "name": "deny-creation-resources-without-tags", 
     "properties": {
         "mode": "all",
-        "displayName": "Audit SSH Auth on Existing Resources",
-        "description": "This policy audits whether any Linux VMs use password-only authentication for SSH on existing resources.",
+        "displayName": "tagging-policy",
+        "description": "Deny the creation of resources that do not have tags in Azure.",
         "policyRule": {
             "if": {
                 "allof": [
                     {
-                        "field": "type",
-                        "equals": "Microsoft.Compute/virtualMachines"
-                    },
-                    {
-                        "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration",
-                        "exists": "True"
-                    },
-                    {
-                        "field": "Microsoft.Compute/virtualMachines/osProfile.linuxConfiguration.disablePasswordAuthentication",
-                        "equals": "false"
+                        "field":  "tag",
+                        "exists": "false"
                     }
                 ]
             },
             "then": {
-                "effect": "audit"
+                "effect": "deny"
             }
         }
     }
 }
 ~~~
+
+### Packer Template
+
+In order to support application deployment, we need to create an image that different organizations can take advantage of to deploy their own apps.To do this, we need to create a packer image that anyone can use, and we will leverage in our own Terraform template. To do so, we use packer to create a server image, ensuring that the provided application is included in the template. In order to complete the requiments of this project, the template ....
+
+* Use an Ubuntu 18.04-LTS SKY as base image
+* Ensure the following commands execute:
+
+~~~
+"inline": ["echo 'Hello, World!' > index.html", "nohup busybox httpd -f -p 80 &" ], "inline_shebang" : "/bin/sh -x", "type" : "shell"
+~~~
+
+* Ensure that the resource group specified in packer for the image is the same image specified in Terraform
+
 
 ### Output
 **Your words here**
